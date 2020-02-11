@@ -10,8 +10,10 @@ import org.springframework.validation.BindingResult;
 public interface UserService {
   Optional<UserAccount> registerNewUserAccount(UserAccountDto userAccountDto, BindingResult bindingResult)
       throws EmailExistsException;
-  UserAccount getUser(String verificationToken);
+  Optional<UserAccount> getUser(String verificationToken);
   UserAccount saveRegisteredUser(UserAccount user);
   void createVerificationToken(UserAccount user, String token);
+  Optional<VerificationToken> generateNewVerificationToken(String token);
   Optional<VerificationToken> getVerificationToken(String verificationToken);
+  String getAllBrands();
 }

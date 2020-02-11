@@ -14,17 +14,14 @@ import org.springframework.stereotype.Component;
 public class RegistrationListener
     implements ApplicationListener<OnRegistrationCompleteEvent> {
   private UserService userService;
-  private MessageSource messageSource;
   private JavaMailSender mailSender;
   
   @Autowired
   public RegistrationListener(
       final UserService userService,
-      final MessageSource messageSource,
       final JavaMailSender mailSender
   ) {
     this.userService = userService;
-    this.messageSource = messageSource;
     this.mailSender = mailSender;
   }
   
@@ -51,8 +48,7 @@ public class RegistrationListener
     String confirmationUrl = event.getAppUrl()
         + "/registrationConfirm.html?token="
         + token;
-    String message = messageSource.getMessage(
-        "message.regSuccess", null, "Click to complete email verification.", event.getLocale());
+    String message = "Click to complete email verification.";
   
     SimpleMailMessage email = new SimpleMailMessage();
     email.setTo(recipientAddress);

@@ -76,6 +76,6 @@ public class UserAccount {
   }
   
   public String toString() {
-    return "Firstname: " + firstName + ", Lastname: " + lastName + ", Role: " + role;
+    return "Email: " + email + ", Role: " + role;
   }
 }

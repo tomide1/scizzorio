@@ -13,6 +13,7 @@ import com.scizzor.scizzorio.enums.UserRole;
 import com.scizzor.scizzorio.repository.TokenRepository;
 import com.scizzor.scizzorio.repository.UserRepository;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,8 +58,14 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
-  public UserAccount getUser(String verificationToken) {
-    return tokenRepository.findByToken(verificationToken).getUser();
+  public Optional<VerificationToken> getVerificationToken(String verificationToken) {
+    return Optional.ofNullable(tokenRepository.findByToken(verificationToken));
+  }
+  
+  @Override
+  public Optional<UserAccount> getUser(String verificationToken) {
+    Optional<VerificationToken> token = getVerificationToken(verificationToken);
+    return token.map(VerificationToken::getUser);
   }
   
   @Override
@@ -72,8 +79,22 @@ public class UserServiceImpl implements UserService {
   }
   
   @Override
-  public Optional<VerificationToken> getVerificationToken(String verificationToken) {
-    return Optional.of(tokenRepository.findByToken(verificationToken));
+  public Optional<VerificationToken> generateNewVerificationToken(String verificationToken) {
+    Optional<UserAccount> user = getUser(verificationToken);
+    VerificationToken token = null;
+    if (user.isPresent()) {
+      token = new VerificationToken(verificationToken, user.get());
+      return Optional.of(tokenRepository.save(token));
+    }
+    return Optional.empty();
+  }
+  
+  @Override
+  public String getAllBrands() {
+    return userRepository.findAll()
+        .stream()
+        .map(UserAccount::toString)
+        .collect(Collectors.joining(","));
   }
   
   private boolean emailExists(String email) {

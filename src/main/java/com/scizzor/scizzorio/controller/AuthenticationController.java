@@ -62,6 +62,15 @@ public class AuthenticationController {
   public String hello() {
     return ("<h1>Hello World</h1>");
   }
+  
+  @GetMapping("/brands")
+  public String getAllBrands() {
+    try {
+      return userService.getAllBrands();
+    } catch (Exception ex) {
+      return "Some error occurred";
+    }
+  }
 
   @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
   public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authRequest)
@@ -81,11 +90,11 @@ public class AuthenticationController {
           userDetailsService.loadUserByUsername(authRequest.getUsername());
       final String jwt = getJwt(userDetails);
       if (!userDetails.isEnabled()) {
-        return new ResponseEntity("user is not authorised", HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>("user is not authorised", HttpStatus.NOT_ACCEPTABLE);
       }
       return ResponseEntity.ok(new AuthenticationResponse(jwt));
     } catch (Exception ex) {
-      return new ResponseEntity(ex, HttpStatus.NOT_ACCEPTABLE);
+      return new ResponseEntity<>(ex, HttpStatus.NOT_ACCEPTABLE);
     }
   }
   
@@ -119,7 +128,7 @@ public class AuthenticationController {
     }
   
     if (bindingResult.hasErrors()) {
-      return new ResponseEntity(
+      return new ResponseEntity<>(
           bindingResult.getAllErrors().toString(),
           HttpStatus.CONFLICT);
     }
